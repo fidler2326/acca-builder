@@ -1,0 +1,32 @@
+{
+  "expo": {
+    "name": "Acca Builder",
+    "slug": "acca_builder",
+    "privacy": "public",
+    "sdkVersion": "32.0.0",
+    "android": {
+      "package": "com.example.myapp"
+    },
+    "platforms": [
+      "ios",
+      "android"
+    ],
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#f9f9f9"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    }
+  }
+}
