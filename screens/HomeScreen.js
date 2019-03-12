@@ -15,7 +15,7 @@ import {
   Image,
 } from 'react-native';
 import SearchInput, { createFilter } from 'react-native-search-filter';
-import emails from '../teams';
+import teams from '../teams';
 const KEYS_TO_FILTERS = ['team', 'league'];
 
 import { WebBrowser } from 'expo';
@@ -52,7 +52,6 @@ export default class HomeScreen extends React.Component {
   }
 
   _clearTeams() {
-    console.log("Yoooooo");
     this.setState({
       teams: []
     });
@@ -71,6 +70,7 @@ export default class HomeScreen extends React.Component {
   _addTeam(team) {
     this.setState({
       teams: [...this.state.teams, team],
+      searchTerm: '',
     });
     // Feedback that team has been added to list
     ToastAndroid.show(team.team+" have been added.", ToastAndroid.SHORT);
@@ -104,15 +104,20 @@ export default class HomeScreen extends React.Component {
   }
 
   render() {
-    const filteredTeams = emails.filter(createFilter(this.state.searchTerm, KEYS_TO_FILTERS))
+    const filteredTeams = teams.filter(createFilter(this.state.searchTerm, KEYS_TO_FILTERS))
 
     return (
       <View style={styles.container}>
 
-        <TouchableHighlight underlayColor="#fff" activeOpacity={1} style={styles.fakeInput} onPress={() => { this.setModalVisible(true); }}>
+        <TouchableHighlight
+          style={styles.fakeInput}
+          underlayColor="#fff"
+          activeOpacity={1}
+          onPress={() => {
+            this.setModalVisible(true);
+          }}>
           <Text style={styles.fakeInputText}>Add Some Teams</Text>
         </TouchableHighlight>
-
 
         <ScrollView style={styles.scrollView}>
           <View>
@@ -122,12 +127,19 @@ export default class HomeScreen extends React.Component {
               keyExtractor={(item, index) => 'list-item-'+index }
               ListEmptyComponent={this.listEmpty}
               renderItem={({item, separators, index}) => (
-                <View style={styles.listItem} key={item}>
+                <View
+                  style={styles.listItem}
+                  key={item}>
                   <View>
                     <Text style={styles.listItemText}>{index+1} {item.team}</Text>
                     <Text style={styles.teamLeague}>{item.league}</Text>
                   </View>
-                  <TouchableOpacity activeOpacity={1} style={styles.buttonRemoveContainer} onPress={this._removeTeam.bind(index,item)}>
+                  <TouchableOpacity
+                    style={styles.buttonRemoveContainer}
+                    activeOpacity={1}
+                    onPress={
+                      this._removeTeam.bind(index,item)
+                    }>
                     <Text style={styles.buttonRemove}>X</Text>
                   </TouchableOpacity>
                 </View>
@@ -135,7 +147,14 @@ export default class HomeScreen extends React.Component {
             />
           </View>
         </ScrollView>
-        <TouchableHighlight underlayColor="#03ac7a" activeOpacity={1} style={styles.button} onPress={() => { this._shuffleArray(); }}>
+
+        <TouchableHighlight
+          style={styles.button}
+          underlayColor="#03ac7a"
+          activeOpacity={1}
+          onPress={() => {
+            this._shuffleArray();
+          }}>
           <Text style={styles.buttonText}>BUILD MY ACCA</Text>
         </TouchableHighlight>
 
@@ -147,41 +166,46 @@ export default class HomeScreen extends React.Component {
             Alert.alert('Modal has been closed.');
           }}>
           <View style={styles.modalContainer}>
+            <View style={styles.searchContainer}>
+              <View style={styles.searchContainerInner}>
+                <View style={styles.searchBarContainer}>
+                  <SearchInput
+                    style={styles.searchBar}
+                    ref={component => this.searchInput = component}
+                    placeholder="Search teams..."
+                    value={this.state.searchTerm}
+                    onChangeText={(searchTerm) => {
+                      this.searchUpdated(searchTerm)
+                    }}/>
+                </View>
 
-              <View style={styles.searchContainer}>
-                <View style={styles.searchContainerInner}>
-                  <View style={styles.searchBarContainer}>
-                    <SearchInput
-                       style={styles.searchBar}
-                      onChangeText={(term) => { this.searchUpdated(term) }}
-                      placeholder="Search teams..."
-                    />
-                  </View>
-
-                  <View style={styles.cancelButton}>
-                    <TouchableOpacity activeOpacity={1}
-                      onPress={() => {
-                        this.setModalVisible(!this.state.modalVisible);
-                      }}>
-                      <Text>Close</Text>
-                    </TouchableOpacity>
-                  </View>
+                <View style={styles.cancelButton}>
+                  <TouchableOpacity
+                    activeOpacity={1}
+                    onPress={() => {
+                      this.setModalVisible(!this.state.modalVisible);
+                    }}>
+                    <Text>Close</Text>
+                  </TouchableOpacity>
                 </View>
               </View>
+            </View>
 
-              <ScrollView>
-                {filteredTeams.map(team => {
-                  return (
-                    <TouchableOpacity activeOpacity={1} onPress={this._addTeam.bind(this,team)} key={team.id}>
-                      <View style={styles.teamItem}>
-                        <Text style={styles.teamName}>{team.team}</Text>
-                        <Text style={styles.teamLeague}>{team.league}</Text>
-                      </View>
-                    </TouchableOpacity>
-                  )
-                })}
-              </ScrollView>
-
+            <ScrollView>
+              {filteredTeams.map(team => {
+                return (
+                  <TouchableOpacity
+                    activeOpacity={1}
+                    key={team.id}
+                    onPress={this._addTeam.bind(this,team)}>
+                    <View style={styles.teamItem}>
+                      <Text style={styles.teamName}>{team.team}</Text>
+                      <Text style={styles.teamLeague}>{team.league}</Text>
+                    </View>
+                  </TouchableOpacity>
+                )
+              })}
+            </ScrollView>
           </View>
         </Modal>
       </View>
